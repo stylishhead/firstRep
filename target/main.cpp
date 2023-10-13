@@ -10,7 +10,7 @@ int random_num(int start, int end) {
 int main() {
     system("chcp 65001"); //проблема с кириллицей
 
-    int sectors[5] = {5, 4,3,2,1,};
+    int sectors[5] = {5, 4, 3, 2, 1};
     int sumOfPoints = 0;
     int x, y;
 
