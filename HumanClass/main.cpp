@@ -9,7 +9,7 @@ private:
     int age;
     float height;
 public:
-    Human() : name("Josh"), age(18), height(180) {}
+    Human() : name("Josh"), age(30), height(180) {}
     Human(string n, int a, float h) : name(std::move(n)), age(a), height(h) {}
 
     string getName() const {return name;}
@@ -71,10 +71,23 @@ int main() {
     Human Eva("Eva", 20, 165);
 
     Student Robert("Robert", 21, 185, 3);
-    cout << Robert.getAge() << "-летний " << Robert.getName() << " учился на " << Robert.getCourse() << " курсе."<< endl;
+    cout << Robert.getAge() << "-летний " << Robert.getName() << " учился на " << Robert.getCourse() << " курсе" << endl;
     Robert.setAge(22);
     Robert.setCourse(4);
-    cout << "Но время идет. " << Robert.getName() << " стал старше на год. Теперь ему " << Robert.getAge() << " и он на " << Robert.getCourse() << " курсе."<< endl;
+    cout << "Но время идет. " << Robert.getName() << " стал старше на год. Теперь ему " << Robert.getAge() << " и он на " << Robert.getCourse() << " курсе"<< endl;
+
+    cout << "Помимо него, в университете еще есть ";
+    UniversityEmployee Guard;
+    cout << Guard.getName() << ", он работает охранником здесь второй месяц. Ему " << Guard.getAge() << endl;
+    cout << "Сначала ему дали код работника - " << Guard.getCode() << endl;
+    Guard.setCode(42);
+    cout << "Но затем сменили. Теперь " << Guard.getName() << " забит в систему под кодом " << Guard.getCode() << endl;
+
+    Lecturer Anastasia("Anastasia", 36, 168, 12, "Физика");
+    cout << "Любимый лектор " << Robert.getName() << "а - это " << Anastasia.getName() << ". Её предмет - " << Anastasia.getSubject() << endl;
+
+    DepartmentDirector Paul("Paul", 40, 170, 2, "Проекты в информационных технологиях", "Программная инженерия и искусственный интеллект");
+    cout << Robert.getName() << " лично знаком с " << Paul.getName() << ". Он ведет " << Paul.getSubject() << ", а также является главой департамента '" << Paul.getDepartment() << "'" << endl;
 
     return 0;
 }
