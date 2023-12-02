@@ -19,9 +19,13 @@ public:
     void setName (string n) {name = n;}
     void setAge (int a) {age = a;}
     void setHeight (float h) {height = h;}
+
+    virtual void greeting() = 0;
 };
 
-class Student : public Human {
+
+
+class Student :  public Human {
 private:
     int course;
 public:
@@ -30,6 +34,10 @@ public:
 
     int getCourse() const {return course;}
     void setCourse(int c) {course = c;}
+
+    void greeting() override {
+        cout << "Привет, я студент!" << endl;
+    }
 };
 
 class UniversityEmployee : public Human{
@@ -41,6 +49,10 @@ public:
 
     int getCode() const {return code;}
     void setCode(int c) {code = c;}
+
+    void greeting() override {
+        cout << "Привет, я работник университета!" << endl;
+    }
 };
 
 class Lecturer : public UniversityEmployee{
@@ -52,6 +64,10 @@ public:
 
     string getSubject() const {return subject;}
     void setSubject(string s) {subject = s;}
+
+    void greeting() override {
+        cout << "Привет, я лектор!" << endl;
+    }
 };
 
 class DepartmentDirector : public Lecturer{
@@ -63,18 +79,22 @@ public:
 
     string getDepartment() const {return department;}
     void setDepartment(string d) {department = d;}
+
+    void greeting() override {
+        cout << "Привет, я директор департамента!" << endl;
+    }
 };
 
 int main() {
     system("chcp 65001"); //проблема с кириллицей
-    Human Adam("Adam", 20, 175);
-    Human Eva("Eva", 20, 165);
+    //Human Adam("Adam", 20, 175);
+    //Human Eva("Eva", 20, 165); //теперь нельзя, т.к. Human - абстрактный класс
 
     Student Robert("Robert", 21, 185, 3);
     cout << Robert.getAge() << "-летний " << Robert.getName() << " учился на " << Robert.getCourse() << " курсе" << endl;
     Robert.setAge(22);
     Robert.setCourse(4);
-    cout << "Но время идет. " << Robert.getName() << " стал старше на год. Теперь ему " << Robert.getAge() << " и он на " << Robert.getCourse() << " курсе"<< endl;
+    cout << "Но время идет. " << Robert.getName() << " стал старше на год. Теперь ему " << Robert.getAge() << ", и он на " << Robert.getCourse() << " курсе"<< endl;
 
     cout << "Помимо него, в университете еще есть ";
     UniversityEmployee Guard;
@@ -88,6 +108,12 @@ int main() {
 
     DepartmentDirector Paul("Paul", 40, 170, 2, "Проекты в информационных технологиях", "Программная инженерия и искусственный интеллект");
     cout << Robert.getName() << " лично знаком с " << Paul.getName() << ". Он ведет " << Paul.getSubject() << ", а также является главой департамента '" << Paul.getDepartment() << "'" << endl;
+
+    cout << "\nА теперь пора бы поздароваться с каждым человеком этого рассказа"<< endl;
+    Robert.greeting();
+    Guard.greeting();
+    Anastasia.greeting();
+    Paul.greeting();
 
     return 0;
 }
