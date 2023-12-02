@@ -32,6 +32,39 @@ public:
     void setCourse(int c) {course = c;}
 };
 
+class UniversityEmployee : public Human{
+private:
+    int code;
+public:
+    UniversityEmployee() : Human(), code(0) {}
+    UniversityEmployee(string n, int a, float h, int c) : Human(n, a, h), code(c) {}
+
+    int getCode() const {return code;}
+    void setCode(int c) {code = c;}
+};
+
+class Lecturer : public UniversityEmployee{
+private:
+    string subject;
+public:
+    Lecturer() : UniversityEmployee(), subject("разные") {}
+    Lecturer(string n, int a, float h, int c, string s) : UniversityEmployee(n, a, h, c), subject(s) {}
+
+    string getSubject() const {return subject;}
+    void setSubject(string s) {subject = s;}
+};
+
+class DepartmentDirector : public Lecturer{
+private:
+    string department;
+public:
+    DepartmentDirector() : Lecturer(), department("Математика") {}
+    DepartmentDirector(string n, int a, float h, int c, string s, string d) : Lecturer(n, a, h, c, s), department(d) {}
+
+    string getDepartment() const {return department;}
+    void setDepartment(string d) {department = d;}
+};
+
 int main() {
     system("chcp 65001"); //проблема с кириллицей
     Human Adam("Adam", 20, 175);
