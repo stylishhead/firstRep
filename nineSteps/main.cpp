@@ -2,14 +2,18 @@
 #include <iostream>
 #include <vector>
 using namespace std;
+class Student;
+class Teacher;
+vector<Student> studentList;
+vector<Teacher> teacherList;
 
 class Student{
 private:
     string name;
     vector<int> marks;
 public:
-    Student() : name("Josh") {};
-    Student(string name) : name(name) {};
+    Student() : name("Josh") {studentList.push_back(*this);};
+    Student(string name) : name(name) {studentList.push_back(*this);};
 
     void addMark(int mark){ //добавление оценки
         if (mark<=5 && mark >=1){
@@ -42,8 +46,8 @@ private:
         return random;
     }
 public:
-    Teacher(): name("Josh"){};
-    Teacher(string name): name(name), mood(true){};
+    Teacher(): name("Josh"){teacherList.push_back(*this);};
+    Teacher(string name): name(name), mood(true){teacherList.push_back(*this);};
 
 
     void addMarkTo(Student &student){
@@ -53,8 +57,49 @@ public:
         }
     }
 
+    bool getMood() const {
+        return this->mood;
+    }
+
     void setMood(bool mood){
         this->mood = mood;
+    }
+};
+
+class Lesson{
+private:
+    Teacher tchr;
+    vector<Student*> comers;
+public:
+    void addTeacher(Teacher &teacher){
+        this->tchr = teacher;
+    }
+
+    void addStudent(Student &student){
+        this->comers.push_back(&student);
+    }
+
+    void grading(){
+        if(!(&tchr == nullptr || comers.empty())) {
+            int numberStudents = rand() % (comers.size() + 1) ; //количество студентов, которые получат оценки
+            for (int i = 0; i < numberStudents; i++) {
+                int stud = rand() % (comers.size()); //номер студента в списке
+                switch (this->tchr.getMood()) {
+                    case true: { //если хорошее настроение, то 1-5 оценок
+                        int y = rand() % 5 + 1;
+                        for (int j = 0; j < y; j++) {
+                            tchr.addMarkTo(*comers[stud]);
+                        }
+                    }
+                    case false: { //если плохое настроение, то 1-2
+                        int y = rand() % 2 + 1;
+                        for (int j = 0; j < y; j++) {
+                            tchr.addMarkTo(*comers[stud]);
+                        }
+                    }
+                }
+            }
+        }
     }
 };
 
@@ -64,9 +109,14 @@ int main() {
     Student Tony = Student("Tony");
 
     Teacher James = Teacher("James");
-    James.addMarkTo(Nick);
-    James.addMarkTo(Tony);
+
+    Lesson lesson1;
+    lesson1.addStudent(Nick);
+    lesson1.addStudent(Tony);
+    lesson1.addTeacher(James);
+    lesson1.grading();
     cout << Nick.isHonors() << endl;
     cout << Tony.isHonors() << endl;
+
     return 0;
 }
