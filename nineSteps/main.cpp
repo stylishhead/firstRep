@@ -31,15 +31,27 @@ public:
     }
 };
 
+class Teacher{
+private:
+    string name;
+public:
+    Teacher(): name("Josh"){};
+    Teacher(string name): name(name){};
+
+    void addMarkTo(Student &student, int mark){
+        student.addMark(mark);
+    }
+
+};
+
 int main() {
     Student Nick = Student("Nick");
-    Nick.addMark(6);
-    cout << Nick.isHonors() << endl;
-    Nick.addMark(5);
-    cout << Nick.isHonors() << endl;
-
     Student Tony = Student("Tony");
-    cout << Tony.isHonors() << endl;
 
+    Teacher James = Teacher("James");
+    James.addMarkTo(Nick, 5);
+    James.addMarkTo(Tony, 3);
+    cout << Nick.isHonors() << endl;
+    cout << Tony.isHonors() << endl;
     return 0;
 }
