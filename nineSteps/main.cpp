@@ -41,6 +41,8 @@ private:
     string name;
     bool mood;
     int freak = 0; // переменная, отвечающая за то, ставит ли препод только 5 или 2 (==1 -> ставит 5, ==2 -> ставит 2, иначе...)
+    int every = 5; //каждая 5 (по стандарту) оценка менеят настроение
+    int statTrak = 0; //кол-во оценок, которые препод поставил студентам
     int random_mark(int x, int y){
         int random = rand() % 2;
         random==1? random=x: random=y;
@@ -51,6 +53,7 @@ public:
     Teacher(string name): name(name), mood(true){teacherList.push_back(*this);};
 
     void addMarkTo(Student &student){
+        statTrak++;
         switch (this->freak){
             case 1: {
                 student.addMark(5);
@@ -74,6 +77,9 @@ public:
                 break;
             }
         }
+        if (this->statTrak % every == 0){
+            this->mood = !this->mood;
+        }
     }
 
     bool getMood() const {
@@ -88,6 +94,9 @@ public:
         this->freak = fr;
     }
 
+    void setEvery(int num){//устанавливает какое количество оценок меняет настроение
+        this->every = num;
+    }
 };
 
 class Lesson{
@@ -102,7 +111,6 @@ public:
     void addStudent(Student &student){
         this->comers.push_back(&student);
     }
-
     void grading(){
         if(!(&tchr == nullptr || comers.empty())) {
             int numberStudents = rand() % (comers.size() + 1) ; //количество студентов, которые получат оценки
@@ -133,16 +141,11 @@ int main() {
     Student Tony = Student("Tony");
 
     Teacher James = Teacher("James");
-    James.setMood(false);
-    
-    Lesson lesson1;
-    lesson1.addStudent(Nick);
-    lesson1.addStudent(Tony);
-    lesson1.addTeacher(James);
-    James.setFreak(2); //если поставит 1, то ставит только оценку 5, если 2, то только 2, иначе - обычный преподаватель
-    lesson1.grading();
-    cout << Nick.isHonors() << endl;
-    cout << Tony.isHonors() << endl;
+    James.setMood(true);
+    James.setEvery(2); //каждую 2 оценку меняется настроение
+    James.addMarkTo(Nick);
+    James.addMarkTo(Nick);
+    cout << James.getMood() << endl;
 
     return 0;
 }
