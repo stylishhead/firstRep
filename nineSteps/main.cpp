@@ -166,7 +166,7 @@ public:
 };
 
 class Parent{
-private:
+protected:
     string name;
     bool mood = true;
     vector<Student*> childList;
@@ -218,22 +218,25 @@ public:
         childList.push_back(&student);
     }
 
-    void somethingAboutEveryone(){
+    virtual void somethingAboutEveryone(){
         if (childList.size() > 0) {
             for (int i = 0; i < childList.size(); i++) {
+                cout << this->name << ": ";
                 saying(i);
             }
         }
     }
 
-    void somethingAboutRandom(){
+    virtual void somethingAboutRandom(){
         if (childList.size() > 0) {
             int i = rand() % (childList.size());
+            cout << this->name << ": ";
             saying(i);
         }
     }
 
-    void somethingSummary(){
+    virtual void somethingSummary(){
+        cout << this->name << ": ";
         if (isHonorsAverage()){
             cout << "They're all good.";
         } else {
@@ -246,10 +249,11 @@ public:
         }
         cout << endl;
     }
-    void somethingAboutSpecific(string name){
+    virtual void somethingAboutSpecific(string name){
         bool have = false;
         for (int i = 0; i < childList.size(); i++){
             if(childList[i]->getName()==name){
+                cout << this->name << ": ";
                 have = true;
                 if (isHonorsAverage()){
                     cout << childList[i]->getName() << " is good, too.";
@@ -278,6 +282,31 @@ public:
     }
 };
 
+class Grandmother: public Parent {
+public:
+    Grandmother(){this->name = "Fiby";};
+    Grandmother(string name) : Parent(name) {};
+
+    void somethingAboutSpecific(string name) override {
+        cout << this->name << ": ";
+        bool have = false;
+        for (int i=0; i < childList.size(); i++){
+            if (childList[i]->getName() == name){
+                have = true;
+            }
+        }
+        if (have){
+            cout << name << " is my grandchild. I'm so proud of him." << endl;
+        } else {
+            if (mood) {
+                cout << name << " good student. I know him" << endl;
+            } else {
+                cout << name << " is a disgrace to the family for sure." << endl;
+            }
+        }
+    }
+};
+
 class Meeting{
 private:
     vector<Teacher*> teachers;
@@ -298,7 +327,6 @@ public:
     void addLesson(Lesson &lsn){
         lessons.push_back(&lsn);
     }
-
     void discussion(){
         cout << "Discussion:" << endl;
         for (int i=0; i < lessons.size(); i++){ //идем по всем прошедшим урокам
@@ -340,6 +368,7 @@ public:
                 withoutParent.push_back(students[i]);
             }
         }
+        cout << "Discussion end." << endl;
     }
 };
 
@@ -356,7 +385,9 @@ int main() {
 
     Parent Frank = Parent("Frank");
     Frank.addChild(Nick);
-    Frank.addChild(Tony);
+
+    Grandmother Fiby;
+    Fiby.addChild(Tony);
 
     Lesson lesson1;
     lesson1.addStudent(Tony);
@@ -370,8 +401,10 @@ int main() {
     meeting1.addStudent(Tony);
     meeting1.addParent(Frank);
     meeting1.addLesson(lesson1);
+    meeting1.addParent(Fiby);
 
     meeting1.discussion();
-
+    Fiby.setMood(false);
+    Fiby.somethingAboutSpecific("Nick");
     return 0;
 }
