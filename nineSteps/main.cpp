@@ -1,6 +1,8 @@
 #include <ctime>
 #include <iostream>
 #include <vector>
+#include <string>
+
 using namespace std;
 class Student;
 class Teacher;
@@ -33,6 +35,10 @@ public:
             }
         }
         return true;
+    }
+
+    string getName(){
+        return this->name;
     }
 };
 
@@ -135,17 +141,128 @@ public:
     }
 };
 
+class Parent{
+private:
+    string name;
+    bool mood = true;
+    vector<Student*> childList;
+    void saying(int i){
+        cout << childList[i]->getName();
+        switch (childList[i]->isHonors()) {
+            case true: {
+                cout << " is an honors student.";
+                break;
+            }
+            case false: {
+                cout << " is learning like everyone else.";
+                break;
+            }
+        }
+        if (this->mood) {
+            cout << " But no matter how my child learns, I will still always love him.";
+        }
+        cout << endl;
+    }
+    bool isHonorsAverage(){
+        int x;
+        if (childList.size() % 2 == 0){
+            x = childList.size()/2;
+        } else {
+            x = childList.size()/2 + 1;
+        }
+        int y;
+        for (int i = 0; i < childList.size(); i++){
+            if (childList[i]->isHonors()) {
+                y++;
+            }
+        }
+        if (y>=x){
+            return true;
+        } else {
+            return false;
+        }
+    }
+public:
+    Parent() : name("Josh"){};
+    Parent(string name) :name(name){};
+
+    void setMood (bool mood) {
+        this->mood = mood;
+    }
+
+    void addChild(Student &student){
+        childList.push_back(&student);
+    }
+
+    void somethingAboutEveryone(){
+        if (childList.size() > 0) {
+            for (int i = 0; i < childList.size(); i++) {
+                saying(i);
+            }
+        }
+    }
+
+    void somethingAboutRandom(){
+        if (childList.size() > 0) {
+            int i = rand() % (childList.size());
+            saying(i);
+        }
+    }
+
+    void somethingSummary(){
+        if (isHonorsAverage()){
+            cout << "They're all good.";
+        } else {
+            cout << "I'm proud of them.";
+        }
+        if (this->mood) {
+            cout << " And I love them all very much.";
+        } else {
+            cout << " But they can do better";
+        }
+        cout << endl;
+    }
+
+    void somethingAboutSpecific(string name){
+        bool have = false;
+        for (int i = 0; i < childList.size(); i++){
+            if(childList[i]->getName()==name){
+                have = true;
+                if (isHonorsAverage()){
+                    cout << childList[i]->getName() << " is good, too.";
+                } else {
+                    cout << childList[i]->getName() << " is my kid, and I'll always be proud of him.";
+                }
+                if (this->mood) {
+                    cout << " And I love him very much.\n";
+                } else {
+                    cout << " But he can do better\n";
+                }
+            }
+        }
+        if (have==false){
+            cout << "This parent does not have this child" << endl;
+        }
+    }
+};
 int main() {
     srand(time(0));
     Student Nick = Student("Nick");
     Student Tony = Student("Tony");
 
     Teacher James = Teacher("James");
-    James.setMood(true);
+    James.setMood(false);
     James.setEvery(2); //каждую 2 оценку меняется настроение
     James.addMarkTo(Nick);
-    James.addMarkTo(Nick);
-    cout << James.getMood() << endl;
-
+    James.addMarkTo(Tony);
+    cout << Nick.isHonors() << endl;
+    cout << Tony.isHonors() << endl;
+    Parent Frank = Parent("Frank");
+    Frank.addChild(Nick);
+    Frank.addChild(Tony);
+    Frank.somethingAboutEveryone();
+    Frank.somethingAboutRandom();
+    Frank.somethingAboutSpecific("Tony");
+    Frank.somethingSummary();
     return 0;
 }
