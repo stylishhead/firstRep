@@ -20,7 +20,7 @@ public:
     void addMark(int mark){ //добавление оценки
         if (mark<=5 && mark >=1){
             this->marks.push_back(mark);
-        }else{ //проверка на корректность ввода оценки (5-ти бальная система)
+        } else { //проверка на корректность ввода оценки (5ти бальная система)
             cout << this->name << " was given the wrong grade - " << mark << endl;
         }
     }
@@ -39,6 +39,10 @@ public:
 
     string getName(){
         return this->name;
+    }
+
+    int getLastMark() const {
+        return marks[marks.size()-1];
     }
 };
 
@@ -103,12 +107,17 @@ public:
     void setEvery(int num){//устанавливает какое количество оценок меняет настроение
         this->every = num;
     }
+
+    string getName() const {
+        return this->name;
+    }
 };
 
 class Lesson{
 private:
     Teacher* tchr;
     vector<Student*> comers;
+    vector<pair<Student&, int>> marks;
 public:
     void addTeacher(Teacher &teacher){
         this->tchr = &teacher;
@@ -127,17 +136,32 @@ public:
                         int y = rand() % 5 + 1;
                         for (int j = 0; j < y; j++) {
                             tchr->addMarkTo(*comers[stud]);
+                            this->marks.emplace_back(*comers[stud],comers[stud]->getLastMark() );
                         }
                     }
                     case false: { //если плохое настроение, то 1-2
                         int y = rand() % 2 + 1;
                         for (int j = 0; j < y; j++) {
                             tchr->addMarkTo(*comers[stud]);
+                            this->marks.emplace_back(*comers[stud],comers[stud]->getLastMark() );
                         }
                     }
                 }
             }
         }
+    }
+
+    bool isOnLesson(Student &student){
+        for (int i = 0; i < marks.size(); i++){
+            if (student.getName() == marks[i].first.getName()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Teacher *getTeacher() const {
+        return tchr;
     }
 };
 
@@ -222,7 +246,6 @@ public:
         }
         cout << endl;
     }
-
     void somethingAboutSpecific(string name){
         bool have = false;
         for (int i = 0; i < childList.size(); i++){
@@ -244,25 +267,111 @@ public:
             cout << "This parent does not have this child" << endl;
         }
     }
+
+    bool isHis(Student &student){
+        for (int i=0; i<childList.capacity(); i++){
+            if (childList[i]->getName() == student.getName()){
+                return true;
+            }
+        }
+        return false;
+    }
 };
+
+class Meeting{
+private:
+    vector<Teacher*> teachers;
+    vector<Student*> students;
+    vector<Parent*> parents;
+    vector<Lesson*> lessons;
+    vector<Student*> withoutParent;
+public:
+    void addTeacher(Teacher &tchr){
+        teachers.push_back(&tchr);
+    }
+    void addStudent(Student &stud){
+        students.push_back(&stud);
+    }
+    void addParent(Parent &prt){
+        parents.push_back(&prt);
+    }
+    void addLesson(Lesson &lsn){
+        lessons.push_back(&lsn);
+    }
+
+    void discussion(){
+        cout << "Discussion:" << endl;
+        for (int i=0; i < lessons.size(); i++){ //идем по всем прошедшим урокам
+            bool tchrHere = false;
+            for (int l=0; l<teachers.size(); l++) {
+                if (lessons[i]->getTeacher()->getName() == teachers[l]->getName()) {
+                    tchrHere = true;
+                    for (int j = 0; j < students.size(); j++) { //нужно для проверки был ли на уроке студент
+                        if (lessons[i]->isOnLesson(*students[j])) {
+                            for (int k = 0; k <parents.size(); k++) { //нужно для проверки, если студент присутствовал, то кто родитель
+                                if (parents[k]->isHis(*students[j])) {
+                                    parents[k]->somethingAboutSpecific(students[j]->getName());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (!tchrHere) {
+                for (int j = 0; j < students.size(); j++) { //нужно для проверки был ли на уроке студент
+                    if (lessons[i]->isOnLesson(*students[j])) {
+                        for (int k = 0; k <parents.size(); k++) { //нужно для проверки, если студент присутствовал, то кто родитель
+                            if (parents[k]->isHis(*students[j])) {
+                                cout << students[j]->getName() << " is my pride." << endl;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (int i=0; i<students.size(); i++){
+            bool have = false;
+            for (int j=0; j<parents.size(); j++) {
+                if (parents[j]->isHis(*students[i])){
+                    have = true;
+                }
+            }
+            if (have == false) {
+                withoutParent.push_back(students[i]);
+            }
+        }
+    }
+};
+
 int main() {
     srand(time(0));
     Student Nick = Student("Nick");
     Student Tony = Student("Tony");
 
     Teacher James = Teacher("James");
-    James.setMood(false);
+    James.setMood(true);
     James.setEvery(2); //каждую 2 оценку меняется настроение
     James.addMarkTo(Nick);
     James.addMarkTo(Tony);
-    cout << Nick.isHonors() << endl;
-    cout << Tony.isHonors() << endl;
+
     Parent Frank = Parent("Frank");
     Frank.addChild(Nick);
     Frank.addChild(Tony);
-    Frank.somethingAboutEveryone();
-    Frank.somethingAboutRandom();
-    Frank.somethingAboutSpecific("Tony");
-    Frank.somethingSummary();
+
+    Lesson lesson1;
+    lesson1.addStudent(Tony);
+    lesson1.addStudent(Nick);
+    lesson1.addTeacher(James);
+    lesson1.grading();
+
+    Meeting meeting1;
+    meeting1.addTeacher(James);
+    meeting1.addStudent(Nick);
+    meeting1.addStudent(Tony);
+    meeting1.addParent(Frank);
+    meeting1.addLesson(lesson1);
+
+    meeting1.discussion();
+
     return 0;
 }
